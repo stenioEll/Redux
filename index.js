@@ -3,12 +3,14 @@ const createStore = redux.createStore
 
 const  CAKE_ORDERED = 'CAKE_ORDERED'
 const CAKE_RESTOCKED = 'CAKE_RESTOCKED'
-const bindActionCreators = redux.bindActionCreators
+const ICECREAM_ORDERED = 'ICECREAM_ORDERED'
+const ICECREAM_RESTOCKED = 'ICECREAM_RESTOCKED'
+
 
 function orderCake() {
     return {
         type: CAKE_ORDERED,
-        payload:1
+        payload: 1
     } 
 
 }
@@ -21,8 +23,23 @@ function restockCake( qty = 1 ) {
 
 }
 
+function orderIcescream( qty = 1) {
+    return {
+        type: ICECREAM_ORDERED,
+        payload: qty
+    }
+}
+
+function restockeIcescream( qty = 1) {
+    return {
+        type: ICECREAM_RESTOCKED,
+        payload: qty
+    }
+}
+
 const initialState = {
     numOfCakes: 10, 
+    numOfIceCreams: 20
 }
  
 
@@ -39,6 +56,16 @@ const reducer = (state = initialState, action) => {
                 ...state, 
                 numOfCakes: state.numOfCakes + action.payload
             }
+        case ICECREAM_ORDERED:
+            return {
+                ...state, //copy of state property and chage only the property i wanna
+                numOfIceCreams: state.numOfIceCreams - 1
+            }
+        case ICECREAM_RESTOCKED:
+            return {
+                ...state, 
+                numOfIceCreams: state.numOfIceCreams + action.payload
+            }
         default:
             return state
     }
@@ -50,11 +77,12 @@ console.log('Initial state', store.getState()) //Allow acess of inicial state
 
 const unsubscribe = store.subscribe(() => console.log('update state', store.getState()))
 
-const actions = bindActionCreators({ orderCake, restockCake}, store.dispatch)
-actions.orderCake()
-actions.orderCake()
-actions.orderCake()
-actions.restockCake(3)
+store.dispatch(orderCake())
+store.dispatch(restockCake(1))
+store.dispatch(orderIcescream())
+store.dispatch(restockeIcescream(1))
+
+
 
 unsubscribe()
 
