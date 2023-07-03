@@ -1,5 +1,6 @@
 const redux = require('redux')
 const createStore = redux.createStore
+const  combineReducers= redux.combineReducers 
 
 const  CAKE_ORDERED = 'CAKE_ORDERED'
 const CAKE_RESTOCKED = 'CAKE_RESTOCKED'
@@ -41,10 +42,18 @@ const initialState = {
     numOfCakes: 10, 
     numOfIceCreams: 20
 }
+
+const initialCakeState = {
+    numOfCakes: 10
+}
+
+const initialIceCreamState = {
+    numOfIceCreams: 20
+}
  
 
 //(previousState, action) => new State
-const reducer = (state = initialState, action) => {
+const cakeReducer = (state = initialCakeState, action) => {
     switch(action.type) {
         case CAKE_ORDERED:
             return {
@@ -56,9 +65,17 @@ const reducer = (state = initialState, action) => {
                 ...state, 
                 numOfCakes: state.numOfCakes + action.payload
             }
+        
+        default:
+            return state
+    }
+}
+
+const IceCreamreducer = (state = initialIceCreamState, action) => {
+    switch(action.type) {
         case ICECREAM_ORDERED:
             return {
-                ...state, //copy of state property and chage only the property i wanna
+                ...state, 
                 numOfIceCreams: state.numOfIceCreams - 1
             }
         case ICECREAM_RESTOCKED:
@@ -71,7 +88,12 @@ const reducer = (state = initialState, action) => {
     }
 }
 
-const store = createStore(reducer) //store hold the state aplication
+const rootReducer = combineReducers({
+    cake: cakeReducer,
+    icecream: IceCreamreducer
+})
+
+const store = createStore(rootReducer) //store hold the state aplication
 
 console.log('Initial state', store.getState()) //Allow acess of inicial state
 
