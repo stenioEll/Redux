@@ -1,4 +1,5 @@
 const redux = require('redux')
+const produce = require('immer').produce
 
 
 const initialState = {
@@ -23,13 +24,16 @@ const updateStreet = (street) => { //action creator
 const reducer = (state = initialState, action) => { //define the reducer to handle this action 
     switch(action.type) {
         case STREET_UPDATED:
-            return {
-                ...state, //copy of state property and chage only the property i wanna
-                address: {
-                    ...state.address, // spread address to not affect city and state
-                    street: action.payload,
-                }
-            }     
+            // return {
+            //     ...state, //copy of state property and chage only the property i wanna
+            //     address: {
+            //         ...state.address, // spread address to not affect city and state
+            //         street: action.payload,
+            //     }
+            // }
+            return produce(state, (draft) => {            // current state, function which receives a draft copy of the state 
+                draft.address.street = action.payload     // immer translate the code for something i have above
+            })     
         default:
             return state
     }
