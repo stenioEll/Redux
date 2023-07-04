@@ -1,7 +1,10 @@
 // Fetch a list of users from an api endpoint and stores( Async actions ) 
 
 const redux = require('redux')
+const thunkMiddleware = require('redux-thunk').default
+const axios = require('axios')
 const createStore = redux.createStore 
+const applyMiddleware = redux.applyMiddleware
 
 //STATE 
 
@@ -26,7 +29,7 @@ const fetchUsersRequested = () => {                         // request to fetch 
     }
 }
 
-const fetchUsersSucceeded = (users) => {                   // store the list of users if the requesta be successful
+const fetchUsersSuccess = (users) => {                   // store the list of users if the requesta be successful
     return {
         type: FETCH_USERS_SUCCEEDED,
         payload: users
@@ -40,6 +43,7 @@ const fetchUsersFailure = error => {                      // error message
     }
 }
 
+//Reducers
 const reducer = (state = initialState, action) => {
     switch(action.type) {
         case FETCH_USERS_REQUESTED:
@@ -62,6 +66,27 @@ const reducer = (state = initialState, action) => {
     }
 }
 
+
+//define async creator 
+
+const fetchUsers = () => {
+    return function(dispatch) {
+        dispatch(fetchUsersRequested())
+        axios
+        .get('https://jsonplaceholder.typicode.com/users')  //request the url successful 
+        .then(response => {                                      //back to response
+            //response.data is the users 
+            const users = response.data.map((user) => user.id)           //extract only users id
+            dispatch(fetchUsersSuccess(users))
+        }).catch(error => {
+            //error.message is the error message
+            dispatch(fetchUsersFailure(error.message))
+        })
+    }
+}
 //Creating Store
 
-const store = createStore(reducer)
+const store = createStore(reducer, applyMiddleware(thunkMiddleware))
+
+store.subscribe(() => { console.log(store.getState())})
+store.dispatch(fetchUsers())
